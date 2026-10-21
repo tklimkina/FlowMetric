@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FlowMetric.Core/FlowMetric.Core.csproj" />
+  <Project Path="FlowMetric/FlowMetric.csproj" />
+</Solution>
