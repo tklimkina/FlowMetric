@@ -3,10 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <!-- Control Panel -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <Button Content="Start benchmark" Click="OnStartBenchmark" 
+                    Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White"/>
+            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="20,0,5,0"/>
+            <TextBlock x:Name="StatusText" Text="Ready to start" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Chart -->
+        <ScottPlot:WpfPlot x:Name="flowPlot" Grid.Row="1"/>
     </Grid>
 </Window>
