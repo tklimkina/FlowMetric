@@ -1,9 +1,10 @@
 ﻿using ConcurrencyExplorer.Core.Workloads;
 using FlowMetric.Core.Benchmark;
 using FlowMetric.Core.Executors;
+using FlowMetric.Core.Workloads;
+using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Linq;
 
 namespace FlowMetric
 {
@@ -12,9 +13,17 @@ namespace FlowMetric
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly List<IWorkload> _workloads = new()
+    {
+        new GuidWorkload(),
+        new ContentionWorkload()
+    };
         public MainWindow()
         {
+
             InitializeComponent();
+            WorkloadSelector.ItemsSource = _workloads.Select(w => w.Name);
+            WorkloadSelector.SelectedIndex = 0;
         }
         private void OnStartBenchmark(object sender, RoutedEventArgs e)
         {

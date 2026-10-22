@@ -15,6 +15,8 @@
 
         <!-- Control Panel -->
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Workload:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="WorkloadSelector" Width="250" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <Button Content="Start benchmark" Click="OnStartBenchmark" 
                     Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White"/>
             <TextBlock Text="Status:" VerticalAlignment="Center" Margin="20,0,5,0"/>
