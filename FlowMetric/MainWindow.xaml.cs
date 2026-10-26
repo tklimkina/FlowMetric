@@ -25,15 +25,20 @@ namespace FlowMetric
             WorkloadSelector.ItemsSource = _workloads.Select(w => w.Name);
             WorkloadSelector.SelectedIndex = 0;
         }
-        private void OnStartBenchmark(object sender, RoutedEventArgs e)
+        private async void OnStartBenchmark(object sender, RoutedEventArgs e)
         {
             StatusText.Text = "Measuring...";
 
-            var workload = new GuidWorkload();
-            var executor = new ParallelExecutor();
-            var runner = new BenchmarkRunner(executor, workload);
+            var selectedName = (string)WorkloadSelector.SelectedItem;
+            var workload = _workloads.First(w => w.Name == selectedName);
 
-            var results = runner.Run(1, 16, 1);
+            var results = await Task.Run(() =>
+            {
+                var executor = new ParallelExecutor();
+                var runner = new BenchmarkRunner(executor, workload);
+
+                return runner.Run(1, 16, 1, iterations: 10);
+            });
 
             flowPlot.Plot.Clear();
 
@@ -48,7 +53,9 @@ namespace FlowMetric
 
             flowPlot.Plot.Axes.Bottom.Label.Text = "Threads count";
             flowPlot.Plot.Axes.Left.Label.Text = "Operations per second (OPS)";
-            flowPlot.Plot.Title($"Workload: {workload.Name}");
+
+            var selectedWorkloadName = (string)WorkloadSelector.SelectedItem;
+            flowPlot.Plot.Title($"Workload: {selectedWorkloadName}");
 
             flowPlot.Plot.Axes.AutoScale();
             flowPlot.Refresh();

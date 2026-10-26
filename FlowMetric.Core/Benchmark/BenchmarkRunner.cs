@@ -42,7 +42,7 @@ public class BenchmarkRunner
                 _executor.Run(_workload, threads);
                 sw.Stop();
 
-                double opsPerSec = 10000 / sw.Elapsed.TotalSeconds;
+                double opsPerSec = 10000000 / sw.Elapsed.TotalSeconds;
                 measurements.Add(opsPerSec);
             }
 
@@ -53,7 +53,7 @@ public class BenchmarkRunner
             results.Add(new BenchmarkResult
             {
                 ThreadCount = threads,
-                ElapsedMilliseconds = 10000 / median, // Обратная величина для наглядности
+                ElapsedMilliseconds = 10000000 / median,
                 OperationsPerSecond = median
             });
         }

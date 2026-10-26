@@ -7,12 +7,24 @@ public class ContentionWorkload : IWorkload
 
     public string Name => "Contention (lock on shared counter)";
 
+    // Measuring work with a critical section
     public void Execute()
     {
-        // Measuring work with a critical section
-        lock (_lock)
+        // Calculations to create workload
+        double sum = 0;
+        for (int i = 0; i < 500; i++)
         {
-            _counter++;
+            sum += Math.Sqrt(i);
         }
+
+        // Concurent measures
+        for (int i = 0; i < 5; i++)
+        {
+            lock (_lock)
+            {
+                _counter++;
+            }
+        }
+
     }
 }
