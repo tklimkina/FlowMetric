@@ -17,7 +17,7 @@ namespace FlowMetric
     {
         new GuidWorkload(),
         new ContentionWorkload(),
-       // new InterlockedWorkload()
+        new InterlockedWorkload()
     };
         public MainWindow()
         {
