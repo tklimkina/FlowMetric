@@ -16,7 +16,8 @@ namespace FlowMetric
         private readonly List<IWorkload> _workloads = new()
     {
         new GuidWorkload(),
-        new ContentionWorkload()
+        new ContentionWorkload(),
+       // new InterlockedWorkload()
     };
         public MainWindow()
         {
@@ -37,7 +38,7 @@ namespace FlowMetric
                 var executor = new ParallelExecutor();
                 var runner = new BenchmarkRunner(executor, workload);
 
-                return runner.Run(1, 16, 1, iterations: 10);
+                return runner.Run(1, 16, 1);
             });
 
             flowPlot.Plot.Clear();

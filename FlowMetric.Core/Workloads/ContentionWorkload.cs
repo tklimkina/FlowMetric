@@ -8,7 +8,7 @@ public class ContentionWorkload : IWorkload
     public string Name => "Contention (lock on shared counter)";
 
     // Measuring work with a critical section
-    public void Execute()
+    public long Execute()
     {
         // Calculations to create workload
         double sum = 0;
@@ -26,5 +26,6 @@ public class ContentionWorkload : IWorkload
             }
         }
 
+        return _counter;
     }
 }

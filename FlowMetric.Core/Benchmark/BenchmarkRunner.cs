@@ -1,7 +1,9 @@
-﻿using FlowMetric.Core.Executors;
-using FlowMetric.Core.Workloads;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
+using System.Linq;
+using FlowMetric.Core.Executors;
+using FlowMetric.Core.Workloads;
 
 namespace FlowMetric.Core.Benchmark;
 
@@ -10,54 +12,112 @@ public class BenchmarkRunner
     private readonly IExecutor _executor;
     private readonly IWorkload _workload;
 
+    // Константы методологии
+    private const int WarmupIterations = 32;     // Tier 1 guaranteed
+    private const int MeasurementIterations = 20; 
+    private const int OperationsPerRun = 10000;
+
     public BenchmarkRunner(IExecutor executor, IWorkload workload)
     {
         _executor = executor;
         _workload = workload;
     }
 
-    public List<BenchmarkResult> Run(int startThreads, int endThreads, int step, int iterations = 5)
+    public List<BenchmarkResult> Run(int startThreads, int endThreads, int step)
     {
         var results = new List<BenchmarkResult>();
 
         for (int threads = startThreads; threads <= endThreads; threads += step)
         {
-            var measurements = new List<double>();
-
-            for (int i = 0; i < iterations; i++)
+            // Warm up
+            long warmupCount = 0;
+            for (int i = 0; i < WarmupIterations; i++)
             {
-                // Warmup (JIT has some time to compile the code)
-                if (i == 0)
-                {
-                    _executor.Run(_workload, threads);
-                    continue;
-                }
+                warmupCount += _executor.Run(_workload, threads);
+            }
 
-                // Clean to avoid outliers
+            // Measurement
+            var measurements = new List<double>();
+            bool gcOccurredInAnyIteration = false;
+
+            for (int i = 0; i < MeasurementIterations; i++)
+            {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
+                int gen0Before = GC.CollectionCount(0);
+                int gen1Before = GC.CollectionCount(1);
+                int gen2Before = GC.CollectionCount(2);
+
                 var sw = Stopwatch.StartNew();
-                _executor.Run(_workload, threads);
+                long result = _executor.Run(_workload, threads);
                 sw.Stop();
 
-                double opsPerSec = 10000000 / sw.Elapsed.TotalSeconds;
+                bool gcOccurred = GC.CollectionCount(0) > gen0Before ||
+                                  GC.CollectionCount(1) > gen1Before ||
+                                  GC.CollectionCount(2) > gen2Before;
+
+                if (gcOccurred) gcOccurredInAnyIteration = true;
+
+                double opsPerSec = OperationsPerRun / sw.Elapsed.TotalSeconds;
                 measurements.Add(opsPerSec);
+
+                // to prevent JIT from deleting the result
+                warmupCount += result;
             }
 
-            // Calculating median result
-            measurements.Sort();
-            double median = measurements[measurements.Count / 2];
+            // Statistic calculations
+            double median = CalculateMedian(measurements);
+            double stdDev = CalculateStandardDeviation(measurements);
+            double cov = stdDev / median;
+
+            // 95% Confidence Interval for Student's t distribution
+            double tValue = GetTValue(MeasurementIterations);
+            double ciMargin = tValue * (stdDev / Math.Sqrt(MeasurementIterations));
 
             results.Add(new BenchmarkResult
             {
                 ThreadCount = threads,
-                ElapsedMilliseconds = 10000000 / median,
-                OperationsPerSecond = median
+                OperationsPerSecond = median,
+                StandardDeviation = stdDev,
+                CoefficientOfVariation = cov,
+                ConfidenceIntervalMargin = ciMargin,
+                GcOccurredDuringMeasurement = gcOccurredInAnyIteration,
+                ActualIterations = MeasurementIterations
             });
         }
 
         return results;
+    }
+
+    private double CalculateMedian(List<double> values)
+    {
+        var sorted = values.OrderBy(x => x).ToList();
+        int mid = sorted.Count / 2;
+        return sorted.Count % 2 == 0 ? (sorted[mid - 1] + sorted[mid]) / 2.0 : sorted[mid];
+    }
+
+    private double CalculateStandardDeviation(List<double> values)
+    {
+        double mean = values.Average();
+        double sumOfSquares = values.Sum(val => Math.Pow(val - mean, 2));
+        return Math.Sqrt(sumOfSquares / (values.Count - 1));
+    }
+
+    // Table for the t-distribution
+    private double GetTValue(int n)
+    {
+        int degreesOfFreedom = n - 1;
+
+        if (degreesOfFreedom >= 30) return 1.960;
+        if (degreesOfFreedom == 29) return 2.045;
+        if (degreesOfFreedom == 24) return 2.064;
+        if (degreesOfFreedom == 19) return 2.093;
+        if (degreesOfFreedom == 14) return 2.145;
+        if (degreesOfFreedom == 9) return 2.262;
+
+        // Default interpolation
+        return 2.145;
     }
 }

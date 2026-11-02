@@ -10,6 +10,6 @@ namespace FlowMetric.Core.Executors
     public interface IExecutor
     {
         string Name { get; }
-        void Run(IWorkload workload, int degreeOfParallelism);
+        long Run(IWorkload workload, int degreeOfParallelism);
     }
 }
