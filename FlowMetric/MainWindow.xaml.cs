@@ -2,6 +2,7 @@
 using FlowMetric.Core.Benchmark;
 using FlowMetric.Core.Executors;
 using FlowMetric.Core.Workloads;
+using System.CodeDom.Compiler;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -17,7 +18,13 @@ namespace FlowMetric
     {
         new GuidWorkload(),
         new ContentionWorkload(),
-        new InterlockedWorkload()
+        new InterlockedWorkload(),
+        new Sha256Workload()
+    };
+        private readonly List<IExecutor> _executors = new()
+    {
+        new ParallelExecutor(),
+        new ChannelExecutor()
     };
         public MainWindow()
         {
@@ -25,17 +32,21 @@ namespace FlowMetric
             InitializeComponent();
             WorkloadSelector.ItemsSource = _workloads.Select(w => w.Name);
             WorkloadSelector.SelectedIndex = 0;
+
+            ExecutorSelector.ItemsSource = _executors.Select(w => w.Name); ;
+            ExecutorSelector.SelectedIndex = 0;
         }
         private async void OnStartBenchmark(object sender, RoutedEventArgs e)
         {
             StatusText.Text = "Measuring...";
 
-            var selectedName = (string)WorkloadSelector.SelectedItem;
-            var workload = _workloads.First(w => w.Name == selectedName);
+            var wSelectedName = (string)WorkloadSelector.SelectedItem;
+            var eSelectedName = (string)ExecutorSelector.SelectedItem;
+            var workload = _workloads.First(w => w.Name == wSelectedName);
+            var executor = _executors.First(w => w.Name == eSelectedName);
 
             var results = await Task.Run(() =>
             {
-                var executor = new ParallelExecutor();
                 var runner = new BenchmarkRunner(executor, workload);
 
                 return runner.Run(1, 16, 1);
