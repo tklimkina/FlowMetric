@@ -6,7 +6,7 @@
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="477" Width="884">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,7 +16,11 @@
         <!-- Control Panel -->
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBlock Text="Workload:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <ComboBox x:Name="WorkloadSelector" Width="250" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox x:Name="WorkloadSelector" Width="250" VerticalAlignment="Center" Margin="0,0,10,0" Height="22"/>
+
+            <TextBlock Text="Executor:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox x:Name="ExecutorSelector" Width="200" Margin="0,0,10,0" Height="22"/>
+            
             <Button Content="Start benchmark" Click="OnStartBenchmark" 
                     Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White"/>
             <TextBlock Text="Status:" VerticalAlignment="Center" Margin="20,0,5,0"/>

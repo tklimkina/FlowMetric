@@ -16,7 +16,7 @@ public class InterlockedWorkload : IWorkload
             sum += Math.Sqrt(i);
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             Interlocked.Increment(ref _counter);
         }
