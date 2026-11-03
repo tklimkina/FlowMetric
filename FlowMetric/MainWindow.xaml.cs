@@ -24,7 +24,8 @@ namespace FlowMetric
         private readonly List<IExecutor> _executors = new()
     {
         new ParallelExecutor(),
-        new ChannelExecutor()
+        new ChannelExecutor(),
+        new TaskExecutor()
     };
         public MainWindow()
         {
