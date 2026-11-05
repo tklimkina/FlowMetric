@@ -3,6 +3,7 @@ using FlowMetric.Core.Benchmark;
 using FlowMetric.Core.Executors;
 using FlowMetric.Core.Workloads;
 using System.CodeDom.Compiler;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -60,10 +61,19 @@ namespace FlowMetric
             double[] xs = results.Select(r => (double)r.ThreadCount).ToArray();
             double[] ys = results.Select(r => r.OperationsPerSecond).ToArray();
 
+
+            // Error range
+            double[] yErrors = results.Select(r => r.ConfidenceIntervalMargin).ToArray();
+            var errorBars = flowPlot.Plot.Add.ErrorBar(xs, ys, yErrors);
+            errorBars.LineWidth = 1;
+            errorBars.CapSize = 5;
+            errorBars.Color = ScottPlot.Colors.DeepPink;
+
             // Draw a plot
             var scatter = flowPlot.Plot.Add.Scatter(xs, ys);
             scatter.LineWidth = 3;
             scatter.MarkerSize = 10;
+            scatter.Color = ScottPlot.Colors.CornflowerBlue;
 
             flowPlot.Plot.Axes.Bottom.Label.Text = "Threads count";
             flowPlot.Plot.Axes.Left.Label.Text = "Operations per second (OPS)";
