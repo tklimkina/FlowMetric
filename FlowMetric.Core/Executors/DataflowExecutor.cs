@@ -29,19 +29,17 @@ public class DataflowExecutor : IExecutor
         var outputBlock = new ActionBlock<long>(
             result =>
             {
-                // Атомарное сложение без блокировок
                 Interlocked.Add(ref totalResult, result);
             },
             new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = 1 // Агрегация в одном потоке (или тоже можно распараллелить)
+                MaxDegreeOfParallelism = 1 
             });
 
-        // 4. Соединяем
+        // Lego Building
         inputBuffer.LinkTo(processBlock, new DataflowLinkOptions { PropagateCompletion = true });
         processBlock.LinkTo(outputBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
-        // 5. Заполняем
         for (int i = 0; i < TotalItems; i++)
         {
             inputBuffer.Post(i);
