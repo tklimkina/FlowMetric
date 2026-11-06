@@ -21,7 +21,8 @@ namespace FlowMetric
         new ContentionWorkload(),
         new InterlockedWorkload(),
         new Sha256Workload(),
-        new FalseSharingWorkload()
+        new FalseSharingWorkload(),
+        new ReaderWriterLockSlimWorkload()
     };
         private readonly List<IExecutor> _executors = new()
     {
