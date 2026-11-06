@@ -28,7 +28,8 @@ namespace FlowMetric
         new ParallelExecutor(),
         new ChannelExecutor(),
         new TaskExecutor(),
-        new DataflowExecutor()
+        new DataflowExecutor(),
+        new ThreadPoolExecutor()
     };
         public MainWindow()
         {
