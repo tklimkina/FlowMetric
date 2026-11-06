@@ -13,7 +13,7 @@ public class ConcurrentDictionaryWorkload : IWorkload
 
     public long Execute()
     {
-        int key = Interlocked.Increment(ref _counter) % 100; // Ограничиваем до 100 ключей, чтобы создать конкуренцию
+        int key = Interlocked.Increment(ref _counter) % 100;                 // for concurrency
         int value = key * 2;
 
         _dict.AddOrUpdate(key, value, (k, v) => v + 1);
