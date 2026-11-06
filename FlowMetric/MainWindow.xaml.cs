@@ -22,7 +22,8 @@ namespace FlowMetric
         new InterlockedWorkload(),
         new Sha256Workload(),
         new FalseSharingWorkload(),
-        new ReaderWriterLockSlimWorkload()
+        new ReaderWriterLockSlimWorkload(),
+        new ConcurrentDictionaryWorkload()
     };
         private readonly List<IExecutor> _executors = new()
     {
@@ -69,7 +70,7 @@ namespace FlowMetric
             double[] yErrors = results.Select(r => r.ConfidenceIntervalMargin).ToArray();
             var errorBars = flowPlot.Plot.Add.ErrorBar(xs, ys, yErrors);
             errorBars.LineWidth = 1;
-            errorBars.CapSize = 5;
+            errorBars.CapSize = 7;
             errorBars.Color = ScottPlot.Colors.DeepPink;
 
             // Draw a plot
