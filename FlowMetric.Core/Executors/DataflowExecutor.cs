@@ -7,10 +7,9 @@ public class DataflowExecutor : IExecutor
 {
     public string Name => "TPL Dataflow (Pipeline)";
 
-    private const int TotalItems = 10000;
-
     public long Run(IWorkload workload, int degreeOfParallelism)
     {
+        int itt = workload.itemsCount;
         long totalResult = 0;
 
         // Input unit
@@ -40,7 +39,7 @@ public class DataflowExecutor : IExecutor
         inputBuffer.LinkTo(processBlock, new DataflowLinkOptions { PropagateCompletion = true });
         processBlock.LinkTo(outputBlock, new DataflowLinkOptions { PropagateCompletion = true });
 
-        for (int i = 0; i < TotalItems; i++)
+        for (int i = 0; i < itt; i++)
         {
             inputBuffer.Post(i);
         }

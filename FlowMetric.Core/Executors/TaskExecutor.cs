@@ -7,10 +7,12 @@ namespace FlowMetric.Core.Executors;
 public class TaskExecutor : IExecutor
 {
     public string Name => "Task.Run (Manual Tasks)";
-    private const int TotalItems = 10000;
 
     public long Run(IWorkload workload, int degreeOfParallelism)
     {
+
+        int TotalItems = workload.itemsCount;
+
         long totalResult = 0;
         object lockObj = new object();
 

@@ -7,10 +7,11 @@ namespace FlowMetric.Core.Executors;
 public class ChannelExecutor : IExecutor
 {
     public string Name => "Channel (Producer-Consumer)";
-    private const int totalItems = 10000;
 
     public long Run(IWorkload workload, int degreeOfParallelism)
     {
+        int itt = workload.itemsCount;
+
         var channel = Channel.CreateUnbounded<int>();
 
         long totalResult = 0;
@@ -19,7 +20,7 @@ public class ChannelExecutor : IExecutor
         // Producer
         var producerTask = Task.Run(async () =>
         {
-            for (int i = 0; i < totalItems; i++)
+            for (int i = 0; i < itt; i++)
             {
                 await channel.Writer.WriteAsync(i);
             }

@@ -12,8 +12,9 @@ public class ParallelExecutor : IExecutor
         long totalResult = 0;
         var options = new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism };
         object lockObj = new object();
+        int itterations = workload.itemsCount;
 
-        Parallel.For(0, 10000, options,
+        Parallel.For(0, itterations, options,
             () => 0L,
             (i, loopState, localSum) =>
             {

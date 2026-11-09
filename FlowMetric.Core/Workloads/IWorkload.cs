@@ -10,5 +10,7 @@ namespace FlowMetric.Core.Workloads
     {
         string Name { get; }
         long Execute();
+
+        int itemsCount => 10000;
     }
 }
