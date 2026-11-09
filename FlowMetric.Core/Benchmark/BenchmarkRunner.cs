@@ -15,12 +15,13 @@ public class BenchmarkRunner
     // Константы методологии
     private const int WarmupIterations = 32;     // Tier 1 guaranteed
     private const int MeasurementIterations = 20; 
-    private const int OperationsPerRun = 10000;
+    private int OperationsPerRun;
 
     public BenchmarkRunner(IExecutor executor, IWorkload workload)
     {
         _executor = executor;
         _workload = workload;
+        OperationsPerRun = workload.itemsCount;
     }
 
     public List<BenchmarkResult> Run(int startThreads, int endThreads, int step)
@@ -40,6 +41,12 @@ public class BenchmarkRunner
             var measurements = new List<double>();
             bool gcOccurredInAnyIteration = false;
 
+            // GC resource count
+            int totalGen0 = 0;
+            int totalGen1 = 0;
+            int totalGen2 = 0;
+            long totalAllocatedBytes = 0;
+
             for (int i = 0; i < MeasurementIterations; i++)
             {
                 GC.Collect();
@@ -49,16 +56,29 @@ public class BenchmarkRunner
                 int gen0Before = GC.CollectionCount(0);
                 int gen1Before = GC.CollectionCount(1);
                 int gen2Before = GC.CollectionCount(2);
+                long allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
 
                 var sw = Stopwatch.StartNew();
                 long result = _executor.Run(_workload, threads);
                 sw.Stop();
 
-                bool gcOccurred = GC.CollectionCount(0) > gen0Before ||
-                                  GC.CollectionCount(1) > gen1Before ||
-                                  GC.CollectionCount(2) > gen2Before;
+                int gen0After = GC.CollectionCount(0);
+                int gen1After = GC.CollectionCount(1);
+                int gen2After = GC.CollectionCount(2);
+
+                long allocatedAfter = GC.GetTotalAllocatedBytes(precise: true);
+
+                bool gcOccurred = gen0After > gen0Before ||
+                                  gen1After > gen1Before ||
+                                  gen2After > gen2Before;
 
                 if (gcOccurred) gcOccurredInAnyIteration = true;
+
+                totalGen0 += (gen0After - gen0Before);
+                totalGen1 += (gen1After - gen1Before);
+                totalGen2 += (gen2After - gen2Before);
+                totalAllocatedBytes += (allocatedAfter - allocatedBefore);
+
 
                 double opsPerSec = OperationsPerRun / sw.Elapsed.TotalSeconds;
                 measurements.Add(opsPerSec);
@@ -84,8 +104,18 @@ public class BenchmarkRunner
                 CoefficientOfVariation = cov,
                 ConfidenceIntervalMargin = ciMargin,
                 GcOccurredDuringMeasurement = gcOccurredInAnyIteration,
-                ActualIterations = MeasurementIterations
+                ActualIterations = MeasurementIterations,
+
+                Gen0Collections = totalGen0,
+                Gen1Collections = totalGen1,
+                Gen2Collections = totalGen2,
+                TotalAllocatedBytes = totalAllocatedBytes
             });
+        }
+
+        foreach (var r in results)
+        {
+            Debug.WriteLine($"Threads: {r.ThreadCount} | Allocated: {r.TotalAllocatedBytes / 1024} KB | GC0: {r.Gen0Collections}");
         }
 
         return results;

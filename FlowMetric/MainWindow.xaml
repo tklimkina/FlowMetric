@@ -6,11 +6,12 @@
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
-        Title="MainWindow" Height="477" Width="884">
+        Title="MainWindow" Height="700" Width="884">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
 
         <!-- Control Panel -->
@@ -29,5 +30,25 @@
 
         <!-- Chart -->
         <ScottPlot:WpfPlot x:Name="flowPlot" Grid.Row="1"/>
+        <!-- GC Table -->
+            <DataGrid x:Name="ResultsGrid"
+                      Grid.Row="2"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True" 
+                      Margin="10" 
+                      Height="200"
+                      GridLinesVisibility="All"
+                      HeadersVisibility="Column"
+            FontSize="12">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Threads cound" Binding="{Binding ThreadCount}" Width="*" />
+                <DataGridTextColumn Header="OPS (operations/sec)" Binding="{Binding OpsFormatted}" Width="150" />
+                <DataGridTextColumn Header="Confidence Interval" Binding="{Binding CIFormatted}" Width="150" />
+                <DataGridTextColumn Header="GC Gen0" Binding="{Binding Gen0Collections}" Width="80" />
+                <DataGridTextColumn Header="GC Gen1" Binding="{Binding Gen1Collections}" Width="80" />
+                <DataGridTextColumn Header="GC Gen2" Binding="{Binding Gen2Collections}" Width="80" />
+                <DataGridTextColumn Header="Memory allocated" Binding="{Binding AllocatedKB}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

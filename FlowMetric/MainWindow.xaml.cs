@@ -15,6 +15,8 @@ namespace FlowMetric
     /// </summary>
     public partial class MainWindow : Window
     {
+        public System.Collections.ObjectModel.ObservableCollection<BenchmarkResult> ResultsCollection { get; set; } = new();
+
         private readonly List<IWorkload> _workloads = new()
     {
         new GuidWorkload(),
@@ -34,6 +36,7 @@ namespace FlowMetric
         new DataflowExecutor(),
         new ThreadPoolExecutor()
     };
+
         public MainWindow()
         {
 
@@ -43,6 +46,8 @@ namespace FlowMetric
 
             ExecutorSelector.ItemsSource = _executors.Select(w => w.Name); ;
             ExecutorSelector.SelectedIndex = 0;
+
+            ResultsGrid.ItemsSource = ResultsCollection;
         }
         private async void OnStartBenchmark(object sender, RoutedEventArgs e)
         {
@@ -90,6 +95,13 @@ namespace FlowMetric
             flowPlot.Refresh();
 
             StatusText.Text = "Completed";
+
+            // GC Metrics
+            ResultsCollection.Clear();
+            foreach (var result in results)
+            {
+                ResultsCollection.Add(result);
+            }
         }
     }
 }
