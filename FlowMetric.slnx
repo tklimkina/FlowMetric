@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="CustomWorkloads/CustomWorkloads.csproj" Id="fae14c59-e850-46d5-a5bf-52b61e9e589a" />
   <Project Path="FlowMetric.Core/FlowMetric.Core.csproj" />
   <Project Path="FlowMetric/FlowMetric.csproj" />
 </Solution>

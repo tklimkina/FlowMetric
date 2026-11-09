@@ -1,11 +1,9 @@
 ﻿using ConcurrencyExplorer.Core.Workloads;
 using FlowMetric.Core.Benchmark;
 using FlowMetric.Core.Executors;
+using FlowMetric.Core.Plugins;
 using FlowMetric.Core.Workloads;
-using System.CodeDom.Compiler;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Windows;
 
 namespace FlowMetric
@@ -41,6 +39,11 @@ namespace FlowMetric
         {
 
             InitializeComponent();
+
+            string pluginsFolder = Path.Combine(AppContext.BaseDirectory, "Plugins");
+            var pluginWorkloads = PluginLoader.LoadPlugins(pluginsFolder);
+            _workloads.AddRange(pluginWorkloads);
+
             WorkloadSelector.ItemsSource = _workloads.Select(w => w.Name);
             WorkloadSelector.SelectedIndex = 0;
 
@@ -48,6 +51,7 @@ namespace FlowMetric
             ExecutorSelector.SelectedIndex = 0;
 
             ResultsGrid.ItemsSource = ResultsCollection;
+
         }
         private async void OnStartBenchmark(object sender, RoutedEventArgs e)
         {
