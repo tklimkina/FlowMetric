@@ -25,7 +25,8 @@ namespace FlowMetric
         new ReaderWriterLockSlimWorkload(),
         new ConcurrentDictionaryWorkload(),
         new FileIOWorkload(),
-        new ConcurrentQueueWorkload()
+        new ConcurrentQueueWorkload(),
+        new SpinLockWorkload()
     };
         private readonly List<IExecutor> _executors = new()
     {
