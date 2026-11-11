@@ -72,7 +72,7 @@ namespace FlowMetric
             {
                 var runner = new BenchmarkRunner(executor, workload);
 
-                return runner.Run(1, 16, 1);
+                return runner.Run(1, 32, 1);
             });
 
             flowPlot.Plot.Clear();
