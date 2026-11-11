@@ -1,10 +1,11 @@
-﻿namespace FlowMetric.Core.Benchmark;
+﻿using System.Text.Json.Serialization;
+
+namespace FlowMetric.Core.Benchmark;
 
 public class BenchmarkResult
 {
     // Parallel Metrics
     public int ThreadCount { get; set; }
-    public double ElapsedMilliseconds { get; set; }
     public double OperationsPerSecond { get; set; }
     public double StandardDeviation { get; set; }
     public double CoefficientOfVariation { get; set; }
@@ -19,8 +20,12 @@ public class BenchmarkResult
     public int Gen1Collections { get; set; }
     public int Gen2Collections { get; set; }
     public long TotalAllocatedBytes { get; set; }
+
+    [JsonIgnore]
     public string AllocatedKB => $"{TotalAllocatedBytes / 1024:N0} KB";
+    [JsonIgnore]
     public string OpsFormatted => $"{OperationsPerSecond:N0}";
+    [JsonIgnore]
     public string CIFormatted => $"± {ConfidenceIntervalMargin:N0}";
 
 }

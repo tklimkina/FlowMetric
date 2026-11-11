@@ -1,6 +1,7 @@
 ﻿using ConcurrencyExplorer.Core.Workloads;
 using FlowMetric.Core.Benchmark;
 using FlowMetric.Core.Executors;
+using FlowMetric.Core.Info;
 using FlowMetric.Core.Plugins;
 using FlowMetric.Core.Workloads;
 using System.IO;
@@ -9,11 +10,12 @@ using System.Windows;
 namespace FlowMetric
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// 
     /// </summary>
     public partial class MainWindow : Window
     {
         public System.Collections.ObjectModel.ObservableCollection<BenchmarkResult> ResultsCollection { get; set; } = new();
+        private int _opr = 0;
 
         private readonly List<IWorkload> _workloads = new()
     {
@@ -64,6 +66,7 @@ namespace FlowMetric
             var eSelectedName = (string)ExecutorSelector.SelectedItem;
             var workload = _workloads.First(w => w.Name == wSelectedName);
             var executor = _executors.First(w => w.Name == eSelectedName);
+            _opr = workload.itemsCount;
 
             var results = await Task.Run(() =>
             {
@@ -108,6 +111,52 @@ namespace FlowMetric
             foreach (var result in results)
             {
                 ResultsCollection.Add(result);
+            }
+        }
+
+        private void OnExportJson(object sender, RoutedEventArgs e)
+        {
+            if (ResultsCollection == null || ResultsCollection.Count == 0)
+            {
+                MessageBox.Show("Сначала запустите бенчмарк, чтобы были данные для экспорта.", "Нет данных", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var currentWorkload = (string)WorkloadSelector.SelectedItem;
+            var currentExecutor = (string)ExecutorSelector.SelectedItem;
+
+            var report = new BenchmarkReport
+            {
+                Configuration = new BenchmarkConfiguration
+                {
+                    WorkloadName = currentWorkload,
+                    ExecutorName = currentExecutor,
+                    WarmupIterations = 32,
+                    MeasurementIterations = 20,
+                    OperationsPerRun = _opr
+                },
+                Results = new System.Collections.Generic.List<BenchmarkResult>(ResultsCollection)
+            };
+
+            // Filename includes types of a workload and of an executor
+            string safeWorkloadName = currentWorkload.Replace(" ", "_").Replace("(", "").Replace(")", "");
+            string safeExecutorName = currentExecutor.Replace(" ", "_").Replace("(", "").Replace(")", "");
+            string fileName = $"FlowMetric_Result_{safeWorkloadName}_{safeExecutorName}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+
+            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string fullPath = Path.Combine(userPath, "Downloads", fileName);
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                BenchmarkExport.SaveToJson(report, fullPath);
+
+                StatusText.Text = $"Exported: {fileName}";
+                MessageBox.Show($"Results are exported into {fullPath}", "Exported", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"While exporting, the error has occurred:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

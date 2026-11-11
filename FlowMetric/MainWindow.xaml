@@ -6,7 +6,7 @@
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="884">
+        Title="MainWindow" Height="700" Width="984">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,7 +23,9 @@
             <ComboBox x:Name="ExecutorSelector" Width="200" Margin="0,0,10,0" Height="22"/>
             
             <Button Content="Start benchmark" Click="OnStartBenchmark" 
-                    Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White"/>
+                    Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White" Margin="0,0,10,0"/>
+            <Button Content="Export JSON" Click="OnExportJson" 
+                    Padding="10,5" FontSize="14" Background="#FF28A745" Foreground="White" />
             <TextBlock Text="Status:" VerticalAlignment="Center" Margin="20,0,5,0"/>
             <TextBlock x:Name="StatusText" Text="Ready to start" VerticalAlignment="Center"/>
         </StackPanel>
