@@ -6,7 +6,7 @@
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="984">
+        Title="MainWindow" Height="700" Width="1016">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

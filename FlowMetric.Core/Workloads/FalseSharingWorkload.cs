@@ -10,7 +10,7 @@ public class FalseSharingWorkload : IWorkload
         _counters = new long[16];
     }
 
-    public string Name => "False Sharing (Bad)";
+    public string Name => "False Sharing (Bad practice)";
 
     public void SetThreadId(int threadId)
     {

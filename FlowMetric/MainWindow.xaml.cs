@@ -4,6 +4,7 @@ using FlowMetric.Core.Executors;
 using FlowMetric.Core.Info;
 using FlowMetric.Core.Plugins;
 using FlowMetric.Core.Workloads;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -44,6 +45,16 @@ namespace FlowMetric
         {
 
             InitializeComponent();
+
+            try
+            {
+                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+                StatusText.Text = "Priority set to High";
+            }
+            catch (Exception)
+            {
+                StatusText.Text = "Running with Normal Priority (Run as Admin for High)";
+            }
 
             string pluginsFolder = Path.Combine(AppContext.BaseDirectory, "Plugins");
             var pluginWorkloads = PluginLoader.LoadPlugins(pluginsFolder);
