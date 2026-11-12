@@ -3,10 +3,54 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:local="clr-namespace:FlowMetric"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="FlowMetric" Height="700" Width="1016">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
 
+        <!-- Control Panel -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Workload:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="WorkloadSelector" Width="250" VerticalAlignment="Center" Margin="0,0,10,0" Height="22"/>
+
+            <TextBlock Text="Executor:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox x:Name="ExecutorSelector" Width="200" Margin="0,0,10,0" Height="22"/>
+            
+            <Button Content="Start benchmark" Click="OnStartBenchmark" 
+                    Padding="10,5" FontSize="14" Background="#FF007ACC" Foreground="White" Margin="0,0,10,0"/>
+            <Button Content="Export JSON" Click="OnExportJson" 
+                    Padding="10,5" FontSize="14" Background="#FF28A745" Foreground="White" />
+            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="20,0,5,0"/>
+            <TextBlock x:Name="StatusText" Text="Ready to start" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Chart -->
+        <ScottPlot:WpfPlot x:Name="flowPlot" Grid.Row="1"/>
+        <!-- GC Table -->
+            <DataGrid x:Name="ResultsGrid"
+                      Grid.Row="2"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True" 
+                      Margin="10" 
+                      Height="200"
+                      GridLinesVisibility="All"
+                      HeadersVisibility="Column"
+            FontSize="12">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Threads cound" Binding="{Binding ThreadCount}" Width="*" />
+                <DataGridTextColumn Header="OPS (operations/sec)" Binding="{Binding OpsFormatted}" Width="150" />
+                <DataGridTextColumn Header="Confidence Interval" Binding="{Binding CIFormatted}" Width="150" />
+                <DataGridTextColumn Header="GC Gen0" Binding="{Binding Gen0Collections}" Width="80" />
+                <DataGridTextColumn Header="GC Gen1" Binding="{Binding Gen1Collections}" Width="80" />
+                <DataGridTextColumn Header="GC Gen2" Binding="{Binding Gen2Collections}" Width="80" />
+                <DataGridTextColumn Header="Memory allocated" Binding="{Binding AllocatedKB}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

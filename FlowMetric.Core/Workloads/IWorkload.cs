@@ -9,6 +9,8 @@ namespace FlowMetric.Core.Workloads
     public interface IWorkload
     {
         string Name { get; }
-        void Execute();
+        long Execute();
+
+        int itemsCount => 10000;
     }
 }

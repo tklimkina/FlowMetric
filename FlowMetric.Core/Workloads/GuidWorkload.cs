@@ -7,9 +7,9 @@ public class GuidWorkload : IWorkload
 {
     public string Name => "GUID Generation (CPU-Light)";
 
-    public void Execute()
+    public long Execute()
     {
         var guid = Guid.NewGuid();
-        _ = guid.ToString();
+        return guid.GetHashCode();
     }
 }
